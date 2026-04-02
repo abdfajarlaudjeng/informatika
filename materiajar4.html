@@ -26,30 +26,41 @@
             display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
         }
         .login-form-area { width: 55%; padding: 50px; display: flex; flex-direction: column; justify-content: center; }
+        .brand-logo-large { width: 85px; height: auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); }
+
+        /* --- Content & Zoom Image --- */
+        .materi-card { transition: all 0.3s ease; border: none !important; border-radius: 15px !important; cursor: pointer; }
+        .materi-card:hover { transform: translateY(-8px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
         
-        .brand-logo-container { display: flex; gap: 15px; margin-bottom: 25px; }
-        .brand-logo-large { 
-            width: 85px; height: auto; 
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); 
+        #doc-content img {
+            max-width: 100%;
+            height: auto;
+            cursor: zoom-in;
+            border-radius: 8px;
+            transition: 0.3s;
+            display: block;
+            margin: 15px auto;
         }
-        
-        /* --- Dashboard Styles --- */
-        .materi-card { transition: all 0.3s ease; border: none !important; border-radius: 15px !important; overflow: hidden; }
-        .materi-card:hover { transform: translateY(-8px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; cursor: pointer; }
-        
+        #doc-content img:hover { opacity: 0.8; transform: scale(1.01); }
+
+        /* --- Loader --- */
         #global-loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255,255,255,0.9); z-index: 9999;
             display: flex; justify-content: center; align-items: center;
         }
 
-        .filter-btn { border-radius: 8px; margin: 0 5px; font-weight: 600; transition: 0.3s; }
-        .filter-btn.active { background-color: #007bff !important; color: #fff !important; border-color: #007bff !important; }
+        /* --- Video Responsive --- */
+        .video-container {
+            position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
+        }
+        .video-container iframe {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        }
 
         @media (max-width: 768px) {
             .login-container { flex-direction: column; width: 100%; height: auto; margin: 15px; }
-            .login-brand { width: 100%; padding: 40px 20px; }
-            .login-form-area { width: 100%; padding: 30px 20px; }
+            .login-brand, .login-form-area { width: 100%; }
         }
     </style>
 </head>
@@ -58,104 +69,106 @@
 <div id="login-page">
     <div class="login-container">
         <div class="login-brand">
-            <div class="brand-logo-container">
+            <div class="d-flex mb-3" style="gap:15px">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Lambang_Kabupaten_Donggala_%282015-sekarang%29.png" alt="Donggala" class="brand-logo-large">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo-Tut-Wuri-Handayani-PNG-Warna.png" alt="Tut Wuri" class="brand-logo-large">                
             </div>
             <h2 class="font-weight-bold mb-1">E-LEARNING</h2>
-            <p class="h5 mb-3 font-weight-light">SMPN 10 BANAWA SELATAN</p>
-            <div style="width: 50px; height: 3px; background: #ffd700; margin-bottom: 20px;"></div>
-            <p class="small opacity-75">Sistem Informasi Pembelajaran Digital<br>Dinas Pendidikan Pemuda Dan Olahraga<br>Kabupaten Donggala</p>
+            <p class="h5 mb-3 font-weight-light text-center">SMPN 10 BANAWA SELATAN</p>
         </div>
 
         <div class="login-form-area">
-            <div class="mb-4">
-                <h3 class="font-weight-bold text-dark">Selamat Datang, Siswa!</h3>
-                <p class="text-muted small">Silahkan lengkapi identitas untuk mulai belajar.</p>
-            </div>
+            <h3 class="font-weight-bold text-dark mb-4">Selamat Datang, Siswa!</h3>
             <div class="form-group">
-                <label class="text-sm font-weight-bold text-secondary">Nama Lengkap</label>
-                <input type="text" id="user_nama" class="form-control form-control-lg shadow-none" placeholder="Masukkan nama sesuai absen">
+                <label class="text-secondary font-weight-bold">Nama Lengkap</label>
+                <input type="text" id="user_nama" class="form-control form-control-lg" placeholder="Masukkan nama sesuai absen">
             </div>
             <div class="form-group mb-4">
-                <label class="text-sm font-weight-bold text-secondary">Kelas</label>
-                <select id="user_kelas" class="form-control form-control-lg shadow-none">
-                    <option value="" disabled selected>Pilih Kelas Anda...</option>
+                <label class="text-secondary font-weight-bold">Kelas</label>
+                <select id="user_kelas" class="form-control form-control-lg">
+                    <option value="" disabled selected>Pilih Kelas...</option>
                     <option>VII (Tujuh)</option>
                     <option>VIII (Delapan)</option>
                     <option>IX (Sembilan)</option>
                 </select>
             </div>
-            <button class="btn btn-primary btn-block btn-lg shadow font-weight-bold py-3" onclick="simpanIdentitas()">
-                MASUK KE MATERI <i class="fas fa-arrow-right ml-2"></i>
+            <button class="btn btn-primary btn-block btn-lg shadow font-weight-bold" onclick="simpanIdentitas()">
+                MULAI BELAJAR <i class="fas fa-arrow-right ml-2"></i>
             </button>
         </div>
     </div>
 </div>
 
 <div class="wrapper">
-    <div id="global-loader" class="d-none">
-        <div class="spinner-border text-primary" role="status"></div>
-    </div>
+    <div id="global-loader" class="d-none"><div class="spinner-border text-primary"></div></div>
 
-    <nav class="main-header navbar navbar-expand-md navbar-light navbar-white border-bottom shadow-sm">
+    <nav class="main-header navbar navbar-expand-md navbar-light bg-white shadow-sm">
         <div class="container">
-            <a href="#" class="navbar-brand">
-                <span class="brand-text font-weight-bold text-dark ml-2">SMPN 10 BANAWA SELATAN</span>
-            </a>
-            
+            <span class="navbar-brand font-weight-bold text-primary">SMPN 10 BANAWA SELATAN</span>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <span class="badge badge-info px-3 py-2 rounded-pill">
+                    <span class="badge badge-info p-2 px-3 rounded-pill">
                         <i class="fas fa-user-circle mr-1"></i> <span id="display-nama"></span> (<span id="display-kelas"></span>)
                     </span>
                 </li>
                 <li class="nav-item ml-2">
-                    <a class="nav-link text-danger" href="#" onclick="logout()"><i class="fas fa-power-off"></i></a>
+                    <a href="#" class="nav-link text-danger" onclick="logout()"><i class="fas fa-power-off"></i></a>
                 </li>
             </ul>
         </div>
     </nav>
 
     <div class="content-wrapper">
-        <div class="content-header">
-            <div class="container text-center">
-                <h1 class="m-0 font-weight-bold text-dark" id="page-title">Materi Pembelajaran</h1>
-            </div>
+        <div class="content-header text-center py-4">
+            <h1 class="font-weight-bold">Materi Pembelajaran Digital</h1>
         </div>
-
         <div class="content">
             <div class="container">
                 <div id="view-grid">
-                    <div class="row mb-4 justify-content-center">
-                        <div class="btn-group shadow-sm bg-white p-1 rounded-lg">
-                            <button class="btn btn-light filter-btn active" onclick="filterMateri('all', this)">Semua</button>
-                            <button class="btn btn-light filter-btn" onclick="filterMateri('pdf', this)">PDF</button>
-                            <button class="btn btn-light filter-btn" onclick="filterMateri('doc', this)">Dokumen</button>
-                        </div>
-                    </div>
-                    <div id="menu-grid" class="row">
-                        </div>
+                    <div id="menu-grid" class="row"></div>
                 </div>
 
                 <div id="view-content" class="d-none">
                     <div class="card card-outline card-primary shadow-lg">
                         <div class="card-header bg-white">
-                            <h3 class="card-title font-weight-bold" id="main-title">Judul Materi</h3>
+                            <h3 class="card-title font-weight-bold text-truncate" id="main-title" style="max-width: 80%;">Judul Materi</h3>
                             <div class="card-tools">
-                                <button type="button" class="btn btn-tool" onclick="backToGrid()"><i class="fas fa-times text-danger"></i></button>
+                                <button class="btn btn-tool text-danger" onclick="backToGrid()"><i class="fas fa-times fa-lg"></i> Tutup</button>
                             </div>
                         </div>
-                        <div class="card-body" id="doc-content"></div>
+                        <div class="card-body p-4" id="doc-content"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <footer class="main-footer text-center py-3">
-        <strong>&copy; 2026 SMP NEGERI 10 BANAWA SELATAN</strong> - Kab. Donggala
-    </footer>
+<div class="modal fade" id="modalGambar" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body text-center p-0">
+                <img src="" id="img-zoom" class="img-fluid rounded shadow-lg">
+                <div class="mt-3"><button class="btn btn-light rounded-pill px-4" data-dismiss="modal">Tutup</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalYoutube" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content shadow-lg">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title font-weight-bold"><i class="fab fa-youtube mr-2"></i> Video Pembelajaran</h5>
+                <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="video-container">
+                    <iframe id="yt-player" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -163,18 +176,41 @@
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsqt9nlNBD_cQQFxKYYn_ZfzcqsJF7Z5RTU83xwzXChpxXjBKo8-ySAQvLoPSJ5rt4/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzgpUgUhHCjdoPxfwhY6Ji5qEXNs8ZCV0iAyONAquiTvhk9buugifO4W1OZmjXh-EVgZA/exec";
     let allData = [];
 
     $(document).ready(function() {
-        const savedNama = localStorage.getItem('siswa_nama');
-        if (!savedNama) {
+        if (!localStorage.getItem('siswa_nama')) {
             $('#login-page').show();
         } else {
             $('#login-page').hide();
             updateUserDisplay();
             fetchMenu();
         }
+
+        // LOGIKA INTERAKSI KONTEN
+        // 1. Zoom Gambar
+        $('#doc-content').on('click', 'img', function() {
+            $('#img-zoom').attr('src', $(this).attr('src'));
+            $('#modalGambar').modal('show');
+        });
+
+        // 2. Pop-up YouTube Otomatis
+        $('#doc-content').on('click', 'a', function(e) {
+            const url = $(this).attr('href');
+            const ytId = getYoutubeId(url);
+            if (ytId) {
+                e.preventDefault();
+                const embedUrl = `https://www.youtube.com/embed/${ytId}?autoplay=1`;
+                $('#yt-player').attr('src', embedUrl);
+                $('#modalYoutube').modal('show');
+            }
+        });
+
+        // Stop video saat modal tutup
+        $('#modalYoutube').on('hidden.bs.modal', function () {
+            $('#yt-player').attr('src', '');
+        });
     });
 
     function simpanIdentitas() {
@@ -186,21 +222,12 @@
             updateUserDisplay();
             $('#login-page').fadeOut();
             fetchMenu();
-        } else {
-            alert("Harap isi Nama dan pilih Kelas!");
-        }
+        } else { alert("Silahkan isi Nama dan Kelas!"); }
     }
 
     function updateUserDisplay() {
         $('#display-nama').text(localStorage.getItem('siswa_nama'));
         $('#display-kelas').text(localStorage.getItem('siswa_kelas'));
-    }
-
-    function logout() {
-        if(confirm("Ganti akun siswa?")) {
-            localStorage.clear();
-            location.reload();
-        }
     }
 
     async function fetchMenu() {
@@ -210,23 +237,25 @@
             const data = await response.json();
             allData = data.menu;
             renderCards(allData);
-        } catch (err) {
-            $('#menu-grid').html('<p class="text-center w-100">Gagal memuat data.</p>');
-        } finally {
-            $('#global-loader').addClass('d-none');
-        }
+        } catch (err) { console.error(err); }
+        finally { $('#global-loader').addClass('d-none'); }
     }
 
-    function renderCards(materiList) {
-        const menuGrid = $('#menu-grid').empty();
-        materiList.forEach((item) => {
+    function renderCards(list) {
+        const grid = $('#menu-grid').empty();
+        if(!list || list.length === 0) {
+            grid.append('<div class="col-12 text-center text-muted">Belum ada materi tersedia.</div>');
+            return;
+        }
+        list.forEach(item => {
             const icon = item.type === 'pdf' ? 'fa-file-pdf text-danger' : 'fa-file-word text-primary';
-            menuGrid.append(`
+            grid.append(`
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100 materi-card shadow-sm" onclick="fetchContent('${item.id}', '${item.name}', '${item.type}')">
-                        <div class="card-body text-center">
+                    <div class="card h-100 materi-card shadow-sm" onclick="openMateri('${item.id}', '${item.name}')">
+                        <div class="card-body text-center p-4">
                             <i class="fas ${icon} fa-4x mb-3"></i>
-                            <h6 class="font-weight-bold">${item.name}</h6>
+                            <h6 class="font-weight-bold mb-0">${item.name}</h6>
+                            <small class="text-muted mt-2 d-block">Klik untuk belajar</small>
                         </div>
                     </div>
                 </div>
@@ -234,38 +263,47 @@
         });
     }
 
-    function filterMateri(type, el) {
-        $('.filter-btn').removeClass('active');
-        $(el).addClass('active');
-        renderCards(type === 'all' ? allData : allData.filter(i => i.type === type));
-    }
-
-    async function fetchContent(id, judul, tipe) {
+    async function openMateri(id, judul) {
         $('#global-loader').removeClass('d-none');
+        
+        // CATAT LOG KE SPREADSHEET
+        kirimLog(id, judul);
+
         try {
             const response = await fetch(`${SCRIPT_URL}?id=${id}`);
             const data = await response.json();
+            
             $('#view-grid').addClass('d-none');
             $('#view-content').removeClass('d-none');
-            $('#main-title').text(data.title);
+            $('#main-title').text(judul);
             
-            const contentArea = $('#doc-content');
+            const area = $('#doc-content');
             if (data.type === "pdf") {
-                contentArea.html(`<iframe src="${data.content}" style="width:100%; height:600px; border:none;"></iframe>`);
+                area.html(`<iframe src="${data.content}" style="width:100%; height:750px; border:none;"></iframe>`);
             } else {
-                contentArea.html(data.content);
+                area.html(data.content);
             }
-        } catch (err) {
-            alert("Gagal memuat materi.");
-        } finally {
-            $('#global-loader').addClass('d-none');
-        }
+            window.scrollTo(0,0);
+        } catch (err) { alert("Gagal memuat materi."); }
+        finally { $('#global-loader').addClass('d-none'); }
     }
 
-    function backToGrid() {
-        $('#view-content').addClass('d-none');
-        $('#view-grid').removeClass('d-none');
+    function kirimLog(id, judul) {
+        const nama = localStorage.getItem('siswa_nama');
+        const kelas = localStorage.getItem('siswa_kelas');
+        const logUrl = `${SCRIPT_URL}?action=log&nama=${encodeURIComponent(nama)}&kelas=${encodeURIComponent(kelas)}&judul=${encodeURIComponent(judul)}&id=${id}`;
+        fetch(logUrl).catch(e => console.error("Log error"));
     }
+
+    function getYoutubeId(url) {
+        if (!url) return null;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    function backToGrid() { $('#view-content').addClass('d-none'); $('#view-grid').removeClass('d-none'); }
+    function logout() { if(confirm("Ganti akun siswa?")) { localStorage.clear(); location.reload(); } }
 </script>
 </body>
 </html>
