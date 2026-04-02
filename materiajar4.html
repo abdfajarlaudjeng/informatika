@@ -3,29 +3,95 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>E-Learning | SMPN 10 BANAWA SELATAN</title>
+    <title>Login E-Learning | SMPN 10 BANAWA SELATAN</title>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     
     <style>
-        .materi-card { transition: transform .2s; }
-        .materi-card:hover { transform: scale(1.02); cursor: pointer; }
-        #doc-content img { max-width: 100%; height: auto; border-radius: 8px; margin: 20px 0; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .content-wrapper { background-color: #f4f6f9; }
-        .brand-link .brand-image { opacity: .8; }
+        /* Login Page Style ala SPADA */
+        #login-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1050; background: #f4f6f9; display: flex; align-items: center; justify-content: center;
+        }
+        .login-container {
+            display: flex; width: 900px; max-width: 95%; min-height: 500px;
+            background: #fff; border-radius: 15px; overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        .login-brand {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white; width: 50%; padding: 40px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+        }
+        .login-form-area { width: 50%; padding: 50px; display: flex; flex-direction: column; justify-content: center; }
+        
+        .brand-logo-large { width: 100px; margin-bottom: 20px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2)); }
+        
+        /* Dashboard Styles */
+        .materi-card { transition: transform .2s; cursor: pointer; }
+        .materi-card:hover { transform: translateY(-5px); }
+        #doc-content img { max-width: 100%; height: auto; border-radius: 8px; margin: 20px 0; }
         #global-loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255,255,255,0.8); z-index: 9999;
             display: flex; justify-content: center; align-items: center;
         }
+
+        @media (max-width: 768px) {
+            .login-container { flex-direction: column; width: 100%; height: auto; }
+            .login-brand { width: 100%; padding: 30px; }
+            .login-form-area { width: 100%; padding: 30px; }
+        }
     </style>
 </head>
 <body class="hold-transition layout-top-nav">
-<div class="wrapper">
 
-    <div id="global-loader" class="hidden">
+<div id="login-page">
+    <div class="login-container">
+        <div class="login-brand">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo-Tut-Wuri-Handayani-PNG-Warna.png" alt="Logo" class="brand-logo-large">
+            <h2 class="font-weight-bold">E-LEARNING</h2>
+            <p class="lead">SMP Negeri 10 Banawa Selatan</p>
+            <p class="small opacity-75">Silahkan masuk untuk mengakses materi pembelajaran digital.</p>
+        </div>
+        <div class="login-form-area">
+            <div class="mb-4">
+                <h3 class="font-weight-bold text-dark">Selamat Datang</h3>
+                <p class="text-muted">Gunakan nama lengkap dan pilih kelas Anda.</p>
+            </div>
+            <div class="form-group">
+                <label class="text-sm font-weight-bold">Nama Lengkap</label>
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-user"></i></span></div>
+                    <input type="text" id="user_nama" class="form-control" placeholder="Contoh: Budi Santoso">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="text-sm font-weight-bold">Kelas</label>
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-school"></i></span></div>
+                    <select id="user_kelas" class="form-control">
+                        <option value="" disabled selected>Pilih Kelas...</option>
+                        <option>VII</option>
+                        <option>VIII</option>
+                        <option>IX</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-block btn-lg mt-3 shadow-sm font-weight-bold" onclick="simpanIdentitas()">
+                Masuk Sekarang <i class="fas fa-sign-in-alt ml-2"></i>
+            </button>
+            <div class="mt-4 text-center">
+                <small class="text-muted font-italic">"Belajar hari ini, memimpin di masa depan."</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <div id="global-loader" class="d-none">
         <div class="spinner-border text-primary" role="status"></div>
     </div>
 
@@ -33,19 +99,18 @@
         <div class="container">
             <a href="#" class="navbar-brand">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo-Tut-Wuri-Handayani-PNG-Warna.png" alt="Logo" class="brand-image img-circle elevation-3">
-                <span class="brand-text font-weight-bold text-uppercase" style="font-size: 1.1rem;">E-Learning SMPN 10</span>
+                <span class="brand-text font-weight-bold text-uppercase">SMPN 10 BANAWA SELATAN</span>
             </a>
-
             <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
                 <li class="nav-item d-none d-sm-inline-block">
                     <div class="nav-link">
-                        <span id="display-user" class="badge badge-info p-2">
-                            <i class="fas fa-user mr-1"></i> <span id="display-nama"></span> (<span id="display-kelas"></span>)
+                        <span class="badge badge-info p-2 shadow-sm">
+                            <i class="fas fa-user-circle mr-1"></i> <span id="display-nama"></span> | Kelas <span id="display-kelas"></span>
                         </span>
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-danger" href="#" onclick="logout()" role="button" title="Ganti Akun">
+                    <a class="nav-link text-danger" href="#" onclick="logout()" role="button" title="Keluar">
                         <i class="fas fa-power-off"></i>
                     </a>
                 </li>
@@ -58,7 +123,7 @@
             <div class="container">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0" id="page-title">Materi Pembelajaran</h1>
+                        <h1 class="m-0 font-weight-bold text-dark" id="page-title">Materi Pembelajaran</h1>
                     </div>
                 </div>
             </div>
@@ -70,32 +135,27 @@
                 <div id="view-grid">
                     <div class="row mb-4">
                         <div class="col-12">
-                            <div class="btn-group w-100 shadow-sm">
-                                <button class="btn btn-default filter-btn active" onclick="filterMateri('all', this)">Semua</button>
-                                <button class="btn btn-default filter-btn" onclick="filterMateri('pdf', this)">PDF</button>
-                                <button class="btn btn-default filter-btn" onclick="filterMateri('doc', this)">Dokumen</button>
+                            <div class="btn-group w-100 shadow-sm border rounded">
+                                <button class="btn btn-white filter-btn active" onclick="filterMateri('all', this)">Semua Materi</button>
+                                <button class="btn btn-white filter-btn" onclick="filterMateri('pdf', this)">Format PDF</button>
+                                <button class="btn btn-white filter-btn" onclick="filterMateri('doc', this)">Format Dokumen</button>
                             </div>
                         </div>
                     </div>
-                    
-                    <div id="menu-grid" class="row">
-                        </div>
+                    <div id="menu-grid" class="row"></div>
                 </div>
 
-                <div id="view-content" class="d-none">
-                    <div class="card card-outline card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title font-weight-bold" id="main-title">Judul Materi</h3>
+                <div id="view-content" class="d-none pb-5">
+                    <div class="card card-outline card-primary shadow-lg border-0" style="border-radius: 15px;">
+                        <div class="card-header bg-white" style="border-radius: 15px 15px 0 0;">
+                            <h3 class="card-title font-weight-bold" id="main-title text-primary">Isi Materi</h3>
                             <div class="card-tools">
-                                <button type="button" class="btn btn-tool" onclick="backToGrid()">
-                                    <i class="fas fa-times"></i> Tutup
-                                </button>
+                                <button type="button" class="btn btn-tool text-danger" onclick="backToGrid()"><i class="fas fa-times-circle fa-lg"></i></button>
                             </div>
                         </div>
-                        <div class="card-body" id="doc-content">
-                            </div>
-                        <div class="card-footer text-center">
-                            <button class="btn btn-secondary" onclick="backToGrid()">Kembali ke Daftar</button>
+                        <div class="card-body px-md-5 py-4" id="doc-content"></div>
+                        <div class="card-footer bg-white text-center">
+                            <button class="btn btn-outline-secondary px-5" onclick="backToGrid()">Kembali</button>
                         </div>
                     </div>
                 </div>
@@ -105,36 +165,8 @@
     </div>
 
     <footer class="main-footer text-center">
-        <strong>&copy; 2026 <a href="#">SMP NEGERI 10 BANAWA SELATAN</a>.</strong> All rights reserved.
+        <strong>&copy; 2026 SMP NEGERI 10 BANAWA SELATAN</strong>
     </footer>
-</div>
-
-<div class="modal fade" id="modal_identitas" data-backdrop="static" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content border-top border-primary">
-            <div class="modal-header">
-                <h5 class="modal-title font-weight-bold text-primary">Login Siswa</h5>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Nama Lengkap</label>
-                    <input type="text" id="user_nama" class="form-control" placeholder="Masukkan nama...">
-                </div>
-                <div class="form-group">
-                    <label>Kelas</label>
-                    <select id="user_kelas" class="form-control">
-                        <option value="" disabled selected>Pilih Kelas</option>
-                        <option>VII</option>
-                        <option>VIII</option>
-                        <option>IX</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-block" onclick="simpanIdentitas()">Mulai Belajar</button>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -148,23 +180,25 @@
     $(document).ready(function() {
         const savedNama = localStorage.getItem('siswa_nama');
         if (!savedNama) {
-            $('#modal_identitas').modal('show');
+            $('#login-page').fadeIn();
         } else {
+            $('#login-page').hide();
             updateUserDisplay();
+            fetchMenu();
         }
-        fetchMenu();
     });
 
     function simpanIdentitas() {
-        const nama = $('#user_nama').val();
+        const nama = $('#user_nama').val().trim();
         const kelas = $('#user_kelas').val();
         if (nama && kelas) {
             localStorage.setItem('siswa_nama', nama);
             localStorage.setItem('siswa_kelas', kelas);
             updateUserDisplay();
-            $('#modal_identitas').modal('hide');
+            $('#login-page').fadeOut();
+            fetchMenu();
         } else {
-            alert("Harap isi semua kolom!");
+            alert("Silahkan masukkan Nama dan pilih Kelas!");
         }
     }
 
@@ -174,7 +208,7 @@
     }
 
     function logout() {
-        if(confirm("Ganti akun siswa?")) {
+        if(confirm("Apakah Anda ingin keluar dan ganti akun?")) {
             localStorage.clear();
             location.reload();
         }
@@ -188,7 +222,7 @@
             allData = data.menu;
             renderCards(allData);
         } catch (err) {
-            $('#menu-grid').html('<div class="col-12"><div class="alert alert-danger">Gagal memuat data materi.</div></div>');
+            $('#menu-grid').html('<div class="col-12 alert alert-danger text-center">Gagal memuat materi. Hubungi admin.</div>');
         } finally {
             $('#global-loader').addClass('d-none');
         }
@@ -197,22 +231,22 @@
     function renderCards(materiList) {
         const menuGrid = $('#menu-grid');
         menuGrid.empty();
-
         materiList.forEach((item) => {
             const isPdf = item.type === 'pdf';
             const color = isPdf ? 'danger' : 'primary';
-            const icon = isPdf ? 'fa-file-pdf' : 'fa-file-word';
+            const icon = isPdf ? 'fa-file-pdf' : 'fa-file-alt';
 
             menuGrid.append(`
-                <div class="col-md-4 col-sm-6 mb-4">
-                    <div class="card card-outline card-${color} h-100 materi-card shadow-sm" onclick="fetchContent('${item.id}', '${item.name}', '${item.type}')">
-                        <div class="card-body text-center">
-                            <i class="fas ${icon} fa-3x text-${color} mb-3"></i>
-                            <h6 class="font-weight-bold text-dark">${item.name}</h6>
-                            <p class="text-muted small">Klik untuk membuka materi</p>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 materi-card shadow-sm border-0" style="border-radius:12px;" onclick="fetchContent('${item.id}', '${item.name}', '${item.type}')">
+                        <div class="card-body text-center py-4">
+                            <div class="mb-3 text-${color}">
+                                <i class="far ${icon} fa-4x"></i>
+                            </div>
+                            <h6 class="font-weight-bold mb-0 text-dark">${item.name}</h6>
                         </div>
-                        <div class="card-footer py-2">
-                            <span class="badge badge-${color}">${item.type.toUpperCase()}</span>
+                        <div class="card-footer bg-transparent border-0 text-center pb-3">
+                            <span class="badge badge-light border text-${color} px-3 py-2">${item.type.toUpperCase()}</span>
                         </div>
                     </div>
                 </div>
@@ -221,8 +255,8 @@
     }
 
     function filterMateri(type, el) {
-        $('.filter-btn').removeClass('active');
-        $(el).addClass('active');
+        $('.filter-btn').removeClass('active btn-primary').addClass('btn-white');
+        $(el).addClass('active btn-primary').removeClass('btn-white');
         const filtered = (type === 'all') ? allData : allData.filter(item => item.type === type);
         renderCards(filtered);
     }
@@ -230,7 +264,7 @@
     async function fetchContent(id, judul, tipe) {
         $('#global-loader').removeClass('d-none');
         
-        // Log Aktivitas
+        // Log Aktivitas ke Spreadsheet
         const nama = localStorage.getItem('siswa_nama');
         const kelas = localStorage.getItem('siswa_kelas');
         const logUrl = `${SCRIPT_URL}?action=log&nama=${encodeURIComponent(nama)}&kelas=${encodeURIComponent(kelas)}&judul=${encodeURIComponent(judul)}&tipe=${encodeURIComponent(tipe)}`;
@@ -243,17 +277,17 @@
             $('#view-grid').addClass('d-none');
             $('#view-content').removeClass('d-none');
             $('#main-title').text(data.title);
-            $('#page-title').text('Sedang Membaca Materi');
+            $('#page-title').text('Mode Baca Materi');
             
             const contentArea = document.getElementById('doc-content');
             if (data.type === "pdf") {
-                contentArea.innerHTML = `<iframe src="${data.content}" style="width:100%; height:750px; border:none;"></iframe>`;
+                contentArea.innerHTML = `<iframe src="${data.content}" style="width:100%; height:800px; border:none; border-radius:10px;" class="shadow-sm"></iframe>`;
             } else {
                 contentArea.innerHTML = data.content;
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (err) {
-            alert("Gagal memuat materi.");
+            alert("Materi tidak dapat dibuka.");
         } finally {
             $('#global-loader').addClass('d-none');
         }
