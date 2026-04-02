@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SMP NEGERI 10 BANAWA SELATAN | E-Learning</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        
+        #doc-content { line-height: 1.8; color: #334155; }
+        #doc-content img { 
+            max-width: 100%; height: auto; border-radius: 0.75rem; 
+            margin: 1.5rem auto; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            cursor: zoom-in;
+        }
+        #doc-content table { width: 100% !important; border-collapse: collapse; margin: 1rem 0; overflow-x: auto; display: block; }
+        #doc-content td, #doc-content th { border: 1px solid #e2e8f0; padding: 0.75rem; }
+        
+        .card-materi { transition: all 0.3s ease; border: 1px solid #e2e8f0; }
+        .card-materi:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); border-color: #3b82f6; }
+        
+        .loader-spin {
+            border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6;
+            border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white border-b sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Lambang_Kabupaten_Donggala_%282015-sekarang%29.png" class="h-10 w-auto" alt="Donggala">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo-Tut-Wuri-Handayani-PNG-Warna.png" class="h-10 w-auto" alt="Tut Wuri">
+                <div class="hidden md:block">
+                    <h1 class="font-bold text-slate-800 leading-none text-lg">SMP NEGERI 10</h1>
+                    <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Banawa Selatan</p>
+                </div>
+            </div>
+            <button onclick="location.reload()" class="btn btn-ghost btn-sm text-slate-600">
+                <i class="fa-solid fa-rotate"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <div id="view-grid">
+            <div class="mb-6 text-center">
+                <h2 class="text-3xl font-extrabold text-slate-800">Materi Pembelajaran</h2>
+                <p class="text-slate-500 mt-2 italic">Filter materi berdasarkan jenis file di bawah ini</p>
+            </div>
+
+            <div class="flex justify-center mb-8">
+                <div role="tablist" class="tabs tabs-boxed bg-slate-200">
+                    <a role="tab" class="tab filter-btn tab-active" onclick="filterMateri('all', this)">Semua</a>
+                    <a role="tab" class="tab filter-btn" onclick="filterMateri('pdf', this)">Hanya PDF</a>
+                    <a role="tab" class="tab filter-btn" onclick="filterMateri('doc', this)">Hanya Dokumen</a>
+                </div>
+            </div>
+            
+            <div id="menu-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+        </div>
+
+        <div id="view-content" class="hidden max-w-5xl mx-auto">
+            <button onclick="backToGrid()" class="btn btn-sm btn-outline mb-6">
+                <i class="fa-solid fa-arrow-left"></i> Kembali
+            </button>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="p-4 md:p-8">
+                    <h1 id="main-title" class="text-2xl font-bold text-slate-900 mb-6 pb-4 border-b"></h1>
+                    <div id="doc-content"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t py-8 mt-20 text-center">
+        <p class="text-slate-500 text-sm">&copy; 2026 SMP NEGERI 10 BANAWA SELATAN</p>
+    </footer>
+
+    <dialog id="modal_zoom" class="modal">
+        <div class="modal-box max-w-5xl bg-transparent shadow-none border-none relative">
+            <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-white text-2xl">✕</button></form>
+            <img id="img-preview" src="" class="mx-auto rounded-lg shadow-2xl">
+        </div>
+        <form method="dialog" class="modal-backdrop bg-black/80"><button>close</button></form>
+    </dialog>
+
+    <div id="global-loader" class="fixed inset-0 bg-white/80 z-[100] flex items-center justify-center hidden">
+        <div class="loader-spin"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzO176BT1nd_8ZlZMQc6QXP8UAOTMWm5PnMFrVe7F4lKk2Ia8JADuasGI2gKpgvggaW/exec";
+        let allData = []; // Menyimpan semua data untuk filter lokal
+
+        async function fetchMenu() {
+            $('#global-loader').removeClass('hidden');
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                allData = data.menu;
+                renderCards(allData);
+            } catch (err) {
+                $('#menu-grid').html(`<div class="col-span-full alert alert-error">Gagal memuat materi.</div>`);
+            } finally {
+                $('#global-loader').addClass('hidden');
+            }
+        }
+
+        function renderCards(materiList) {
+            const menuGrid = $('#menu-grid');
+            menuGrid.empty();
+
+            if (materiList.length === 0) {
+                menuGrid.html(`<div class="col-span-full text-center py-10 text-slate-400 font-medium italic">Materi tidak ditemukan.</div>`);
+                return;
+            }
+
+            materiList.forEach((item) => {
+                const isPdf = item.type === 'pdf';
+                const icon = isPdf ? 'fa-file-pdf text-red-500' : 'fa-file-lines text-blue-600';
+                const badge = isPdf ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600';
+                
+                // KETERANGAN BERDASARKAN JENIS
+                const deskripsi = isPdf 
+                    ? "Materi dalam format PDF. Memerlukan aplikasi pembaca PDF atau browser terbaru." 
+                    : "Materi dalam format dokumen interaktif. Bisa langsung dibaca di sini.";
+
+                menuGrid.append(`
+                    <div class="card card-materi bg-white cursor-pointer rounded-xl overflow-hidden" onclick="fetchContent('${item.id}')">
+                        <div class="p-5 flex flex-col h-full">
+                            <div class="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center mb-4 text-2xl">
+                                <i class="fa-solid ${icon}"></i>
+                            </div>
+                            <h3 class="font-bold text-slate-800 mb-2 line-clamp-2">${item.name}</h3>
+                            <p class="text-[11px] text-slate-500 leading-relaxed mb-4 grow italic">
+                                ${deskripsi}
+                            </p>
+                            <div class="flex items-center text-[10px] mt-auto">
+                                <span class="${badge} px-2 py-1 rounded-full font-bold uppercase">${item.type}</span>
+                                <span class="ml-auto text-blue-500 font-bold">Buka <i class="fa-solid fa-chevron-right ml-1"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        // FUNGSI FILTER
+        function filterMateri(type, el) {
+            $('.filter-btn').removeClass('tab-active');
+            $(el).addClass('tab-active');
+
+            if (type === 'all') {
+                renderCards(allData);
+            } else {
+                const filtered = allData.filter(item => item.type === type);
+                renderCards(filtered);
+            }
+        }
+
+        async function fetchContent(docId) {
+            $('#global-loader').removeClass('hidden');
+            try {
+                const response = await fetch(`${SCRIPT_URL}?id=${docId}`);
+                const data = await response.json();
+                
+                $('#view-grid').addClass('hidden');
+                $('#view-content').removeClass('hidden');
+                $('#main-title').text(data.title);
+                
+                const contentArea = document.getElementById('doc-content');
+                
+                if (data.type === "pdf") {
+                    contentArea.innerHTML = `
+                        <div class="w-full" style="height: 80vh;">
+                            <iframe src="${data.content}" class="w-full h-full rounded-lg border shadow-inner" allow="autoplay"></iframe>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <a href="${data.content.replace('/preview', '/view')}" target="_blank" class="btn btn-primary btn-wide">
+                                <i class="fa-solid fa-file-pdf"></i> Fokus Mode / Download
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    contentArea.innerHTML = data.content;
+                    $(contentArea).find('a').attr('target', '_blank').attr('rel', 'noopener noreferrer');
+                    $(contentArea).find('img').on('click', function() {
+                        $('#img-preview').attr('src', $(this).attr('src'));
+                        modal_zoom.showModal();
+                    });
+                }
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (err) {
+                alert("Gagal memuat konten.");
+            } finally {
+                $('#global-loader').addClass('hidden');
+            }
+        }
+
+        function backToGrid() {
+            $('#view-content').addClass('hidden');
+            $('#view-grid').removeClass('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        $(document).ready(fetchMenu);
+    </script>
+</body>
+</html>
