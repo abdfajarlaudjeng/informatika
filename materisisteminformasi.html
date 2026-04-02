@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Komputer - Materi Edukasi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 leading-relaxed antialiased">
+
+    <nav class="sticky top-0 z-50 glass border-b border-slate-200">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex justify-between items-center">
+            <span class="text-xl font-bold text-blue-600">Sistem Komputer</span>
+            <div class="hidden md:flex space-x-6 text-sm font-medium">
+                <a href="#pengenalan" class="hover:text-blue-600 transition">Pengenalan</a>
+                <a href="#komponen" class="hover:text-blue-600 transition">Komponen</a>
+                <a href="#fungsi" class="hover:text-blue-600 transition">Fungsi</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="py-20 px-6 bg-white border-b border-slate-100">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">
+                Memahami Fundamental <span class="text-blue-600">Sistem Komputer</span>
+            </h1>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                Pelajari bagaimana perangkat keras, perangkat lunak, dan pengguna berinteraksi untuk memproses data menjadi informasi yang berguna.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-16">
+        
+        <section id="pengenalan" class="mb-20 scroll-mt-24">
+            <div class="bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-slate-200">
+                <h2 class="text-3xl font-bold mb-6">Apa itu Sistem Komputer?</h2>
+                <p class="text-lg text-slate-600">
+                    Sistem komputer adalah kumpulan perangkat-perangkat komputer yang saling berhubungan dan berinteraksi satu sama lain untuk melakukan proses pengolahan data, sehingga dapat menghasilkan informasi yang diharapkan oleh penggunanya.
+                </p>
+            </div>
+        </section>
+
+        <section id="komponen" class="mb-20 scroll-mt-24">
+            <h2 class="text-3xl font-bold mb-10 text-center">Komponen Utama</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-2xl border border-slate-200 hover:shadow-lg transition duration-300">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6 text-blue-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Hardware</h3>
+                    <p class="text-slate-500 text-sm italic mb-4">Perangkat Keras</p>
+                    <p class="text-slate-600">Komponen fisik komputer seperti CPU, RAM, Harddisk, dan motherboard.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-2xl border border-slate-200 hover:shadow-lg transition duration-300">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-6 text-indigo-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Software</h3>
+                    <p class="text-slate-500 text-sm italic mb-4">Perangkat Lunak</p>
+                    <p class="text-slate-600">Program yang berisi instruksi untuk menjalankan perintah pada perangkat keras.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-2xl border border-slate-200 hover:shadow-lg transition duration-300">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6 text-purple-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Brainware</h3>
+                    <p class="text-slate-500 text-sm italic mb-4">Pengguna</p>
+                    <p class="text-slate-600">Manusia yang mengoperasikan, memprogram, dan mengatur sistem komputer.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="fungsi" class="scroll-mt-24">
+            <div class="bg-slate-900 rounded-[2.5rem] p-8 md:p-16 text-white">
+                <h2 class="text-3xl font-bold mb-8 text-center">4 Elemen Siklus Pengolahan</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-blue-500 mb-2">01</div>
+                        <p class="font-semibold uppercase tracking-widest text-xs">Input</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-blue-500 mb-2">02</div>
+                        <p class="font-semibold uppercase tracking-widest text-xs">Process</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-blue-500 mb-2">03</div>
+                        <p class="font-semibold uppercase tracking-widest text-xs">Output</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-blue-500 mb-2">04</div>
+                        <p class="font-semibold uppercase tracking-widest text-xs">Storage</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-12 text-center text-slate-500 text-sm">
+        <p>© 2026 Ringkasan Materi Sistem Komputer. SMP NEGERI 10 BANAWA SELATAN</p>
+    </footer>
+
+</body>
+</html>
