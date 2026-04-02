@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SMP NEGERI 10 BANAWA SELATAN | E-Learning</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        
+        /* Styling Konten Google Docs */
+        #doc-content { line-height: 1.8; color: #334155; }
+        #doc-content img { 
+            max-width: 100%; height: auto; border-radius: 0.75rem; 
+            margin: 1.5rem auto; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            cursor: zoom-in;
+        }
+        #doc-content table { width: 100% !important; border-collapse: collapse; margin: 1rem 0; overflow-x: auto; display: block; }
+        #doc-content td, #doc-content th { border: 1px solid #e2e8f0; padding: 0.75rem; }
+        
+        .card-materi { transition: all 0.3s ease; border: 1px solid #e2e8f0; }
+        .card-materi:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); border-color: #3b82f6; }
+        
+        /* Animasi Loading */
+        .loader-spin {
+            border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6;
+            border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white border-b sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Lambang_Kabupaten_Donggala_%282015-sekarang%29.png" class="h-10 w-auto" alt="Donggala">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo-Tut-Wuri-Handayani-PNG-Warna.png" class="h-10 w-auto" alt="Tut Wuri">
+                <div class="hidden md:block">
+                    <h1 class="font-bold text-slate-800 leading-none">SMP NEGERI 10</h1>
+                    <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Banawa Selatan</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="location.reload()" class="btn btn-ghost btn-sm text-slate-600">
+                    <i class="fa-solid fa-rotate"></i> Refresh
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        
+        <div id="view-grid">
+            <div class="mb-8 text-center">
+                <h2 class="text-3xl font-extrabold text-slate-800">Materi Pembelajaran</h2>
+                <p class="text-slate-500 mt-2">Pilih kotak materi di bawah ini untuk mulai belajar</p>
+            </div>
+            
+            <div id="menu-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                </div>
+        </div>
+
+        <div id="view-content" class="hidden max-w-4xl mx-auto">
+            <button onclick="backToGrid()" class="btn btn-sm btn-outline mb-6">
+                <i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar
+            </button>
+            
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="p-6 md:p-10">
+                    <h1 id="main-title" class="text-3xl font-bold text-slate-900 mb-6 pb-4 border-b">Memuat...</h1>
+                    <div id="doc-content">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t py-8 mt-20 text-center">
+        <p class="text-slate-500 text-sm">&copy; 2026 SMP NEGERI 10 BANAWA SELATAN</p>
+        <p class="text-xs text-slate-400 mt-1">Dinas Pendidikan Pemuda dan Olahraga Kabupaten Donggala</p>
+    </footer>
+
+    <dialog id="modal_zoom" class="modal">
+        <div class="modal-box max-w-5xl bg-transparent shadow-none border-none relative">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-white text-2xl">✕</button>
+            </form>
+            <img id="img-preview" src="" class="mx-auto rounded-lg shadow-2xl">
+        </div>
+        <form method="dialog" class="modal-backdrop bg-black/80">
+            <button>close</button>
+        </form>
+    </dialog>
+
+    <div id="global-loader" class="fixed inset-0 bg-white/80 z-[100] flex items-center justify-center hidden">
+        <div class="loader-spin"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoY0Y25pfCegNnqDw5LAX5E4kJl9JRdse0E9pdBFhqqwRiFL4FbBAnMJtWYPbAADD_Kg/exec";
+
+        async function fetchMenu() {
+            $('#global-loader').removeClass('hidden');
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                if(data.error) throw new Error(data.error);
+
+                const menuGrid = $('#menu-grid');
+                menuGrid.empty();
+
+                data.menu.forEach((item) => {
+                    // Membuat tampilan Card Kotak
+                    menuGrid.append(`
+                        <div class="card card-materi bg-white cursor-pointer rounded-xl overflow-hidden" onclick="fetchContent('${item.id}')">
+                            <div class="p-5">
+                                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mb-4 text-xl">
+                                    <i class="fa-solid fa-file-lines"></i>
+                                </div>
+                                <h3 class="font-bold text-slate-800 mb-2 line-clamp-2">${item.name}</h3>
+                                <div class="flex items-center text-xs text-slate-400 mt-4">
+                                    <span class="bg-slate-100 px-2 py-1 rounded">Google Docs</span>
+                                    <span class="ml-auto text-blue-500 font-bold">Baca Materi <i class="fa-solid fa-chevron-right ml-1"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                });
+            } catch (err) {
+                $('#menu-grid').html(`<div class="col-span-full alert alert-error">Gagal memuat data. Periksa koneksi atau izin folder.</div>`);
+            } finally {
+                $('#global-loader').addClass('hidden');
+            }
+        }
+
+        async function fetchContent(docId) {
+            $('#global-loader').removeClass('hidden');
+            try {
+                const response = await fetch(`${SCRIPT_URL}?id=${docId}`);
+                const data = await response.json();
+                if(data.error) throw new Error(data.error);
+
+                // Ganti Tampilan ke View Konten
+                $('#view-grid').addClass('hidden');
+                $('#view-content').removeClass('hidden');
+
+                $('#main-title').text(data.title);
+                const contentArea = document.getElementById('doc-content');
+                contentArea.innerHTML = data.content;
+
+                // Tab Baru untuk Link
+                $(contentArea).find('a').attr('target', '_blank').attr('rel', 'noopener noreferrer');
+
+                // Zoom Gambar
+                $(contentArea).find('img').on('click', function() {
+                    $('#img-preview').attr('src', $(this).attr('src'));
+                    modal_zoom.showModal();
+                });
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (err) {
+                alert("Gagal memuat materi.");
+            } finally {
+                $('#global-loader').addClass('hidden');
+            }
+        }
+
+        function backToGrid() {
+            $('#view-content').addClass('hidden');
+            $('#view-grid').removeClass('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        $(document).ready(function() {
+            fetchMenu();
+        });
+    </script>
+</body>
+</html>
