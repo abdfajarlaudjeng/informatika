@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT Disdikbud Donggala</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #F8FAFC; overflow-x: hidden; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="view-login" class="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-900 via-blue-900 to-slate-900 p-6">
+        <div class="bg-white p-10 rounded-[3rem] shadow-2xl w-full max-w-md text-center">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Lambang_Kabupaten_Donggala_%282015-sekarang%29.png" class="w-16 mx-auto mb-6">
+            <h1 class="text-2xl font-black uppercase tracking-tighter">CBT Disdikbud</h1>
+            <p class="text-[10px] font-bold text-blue-600 mb-8 tracking-widest">KABUPATEN DONGGALA</p>
+            <div class="space-y-4">
+                <input type="text" id="user" placeholder="Username / NIP" class="w-full p-4 rounded-xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="password" id="pass" placeholder="Password" class="w-full p-4 rounded-xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
+                <button onclick="doLogin()" id="btn-login" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl uppercase text-xs tracking-widest shadow-lg">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-dashboard" class="hidden min-h-screen flex flex-col">
+        <nav class="glass border-b px-8 py-4 flex justify-between items-center sticky top-0 z-50">
+            <div class="flex items-center gap-3">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Lambang_Kabupaten_Donggala_%282015-sekarang%29.png" class="h-8">
+                <div>
+                    <p id="display-name" class="font-black text-sm italic leading-none">User</p>
+                    <p id="role-badge" class="text-[8px] font-bold text-blue-600 uppercase"></p>
+                </div>
+            </div>
+            <button onclick="location.reload()" class="text-red-500 font-black text-[10px] uppercase bg-red-50 px-4 py-2 rounded-lg">Logout</button>
+        </nav>
+
+        <main class="p-8 max-w-7xl mx-auto w-full">
+            <div id="main-menu" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 text-center">
+                <button id="btn-monitor" onclick="loadKadisMonitoring()" class="hidden bg-white p-6 rounded-3xl border shadow-sm hover:shadow-md transition">
+                    <i class="fas fa-chart-pie text-blue-500 mb-2 text-xl"></i>
+                    <p class="text-[9px] font-black uppercase text-slate-400">Monitoring</p>
+                </button>
+                <button id="btn-materi" onclick="loadMateri()" class="hidden bg-white p-6 rounded-3xl border shadow-sm hover:shadow-md transition">
+                    <i class="fas fa-book-open text-emerald-500 mb-2 text-xl"></i>
+                    <p class="text-[9px] font-black uppercase text-slate-400">E-Materi</p>
+                </button>
+                <button id="btn-soal" onclick="loadKelolaSoal()" class="hidden bg-white p-6 rounded-3xl border shadow-sm hover:shadow-md transition">
+                    <i class="fas fa-database text-orange-500 mb-2 text-xl"></i>
+                    <p class="text-[9px] font-black uppercase text-slate-400">Bank Soal</p>
+                </button>
+                <button id="btn-ujian" onclick="loadUjian()" class="hidden bg-white p-6 rounded-3xl border shadow-sm hover:shadow-md transition">
+                    <i class="fas fa-file-signature text-rose-500 mb-2 text-xl"></i>
+                    <p class="text-[9px] font-black uppercase text-slate-400">E-Ujian</p>
+                </button>
+            </div>
+
+            <div id="dynamic-content" class="space-y-8"></div>
+        </main>
+    </div>
+
+    <div id="modal-soal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-2xl p-8 overflow-y-auto max-h-[90vh] custom-scrollbar">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-black italic uppercase">Tambah Bank Soal</h2>
+                <button onclick="toggleModal('modal-soal', false)" class="text-2xl">&times;</button>
+            </div>
+            <form id="form-soal" class="space-y-4 text-sm">
+                <input type="hidden" name="action" value="saveSoal">
+                <div class="grid grid-cols-2 gap-4">
+                    <select name="kategori" class="p-4 border rounded-xl bg-slate-50"><option>Harian</option><option>UTS</option><option>UAS</option></select>
+                    <select name="kelas" class="p-4 border rounded-xl bg-slate-50"><option>Kelas 7</option><option>Kelas 8</option><option>Kelas 9</option></select>
+                </div>
+                <input type="text" name="mapel" placeholder="Mata Pelajaran" class="w-full p-4 border rounded-xl bg-slate-50" required>
+                <textarea name="pertanyaan" placeholder="Tulis Pertanyaan..." class="w-full p-4 border rounded-xl bg-slate-50 h-24" required></textarea>
+                <div class="grid gap-2">
+                    <input type="text" name="opsi_a" placeholder="Opsi A" class="p-3 border rounded-lg" required>
+                    <input type="text" name="opsi_b" placeholder="Opsi B" class="p-3 border rounded-lg" required>
+                    <input type="text" name="opsi_c" placeholder="Opsi C" class="p-3 border rounded-lg" required>
+                    <input type="text" name="opsi_d" placeholder="Opsi D" class="p-3 border rounded-lg" required>
+                </div>
+                <select name="jawaban_benar" class="w-full p-4 border rounded-xl bg-blue-50 font-bold"><option value="a">Jawaban Benar: A</option><option value="b">Jawaban Benar: B</option><option value="c">Jawaban Benar: C</option><option value="d">Jawaban Benar: D</option></select>
+                <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-lg">SIMPAN SOAL</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-materi" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-2xl p-8 overflow-y-auto max-h-[90vh]">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-black italic uppercase">Tambah Materi</h2>
+                <button onclick="toggleModal('modal-materi', false)" class="text-2xl">&times;</button>
+            </div>
+            <form id="form-materi" class="space-y-4">
+                <input type="hidden" name="action" value="saveMateri">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" name="mapel" placeholder="Mapel" class="p-4 border rounded-xl" required>
+                    <select name="kelas" class="p-4 border rounded-xl"><option>Kelas 7</option><option>Kelas 8</option><option>Kelas 9</option></select>
+                </div>
+                <input type="text" name="judul" placeholder="Judul Materi" class="w-full p-4 border rounded-xl" required>
+                <textarea name="konten" placeholder="Isi Materi..." class="w-full p-4 border rounded-xl h-32" required></textarea>
+                <input type="text" name="link_yt" placeholder="ID YouTube (Opsional)" class="w-full p-4 border rounded-xl">
+                <input type="text" name="link_pdf" placeholder="Link PDF (Opsional)" class="w-full p-4 border rounded-xl">
+                <input type="text" name="link_img" placeholder="Link Gambar (Opsional)" class="w-full p-4 border rounded-xl">
+                <button type="submit" class="w-full bg-emerald-600 text-white font-black py-4 rounded-xl shadow-lg">SIMPAN MATERI</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-detail-materi" class="hidden fixed inset-0 bg-white z-[110] flex flex-col overflow-y-auto">
+        <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white">
+            <h2 id="view-judul" class="font-black italic uppercase">Judul</h2>
+            <button onclick="document.getElementById('modal-detail-materi').classList.add('hidden')" class="bg-slate-100 px-6 py-2 rounded-xl font-black text-[10px]">TUTUP</button>
+        </div>
+        <div class="max-w-4xl mx-auto w-full p-8 space-y-6">
+            <div id="view-yt" class="hidden aspect-video rounded-3xl overflow-hidden shadow-xl"></div>
+            <div id="view-img" class="hidden rounded-3xl overflow-hidden shadow-xl"><img class="w-full"></div>
+            <p id="view-konten" class="text-slate-700 leading-relaxed text-lg"></p>
+            <div id="view-pdf" class="hidden"><a href="#" target="_blank" class="block p-6 bg-red-50 text-red-600 rounded-2xl border-2 border-dashed text-center font-bold">BUKA PDF MATERI</a></div>
+        </div>
+    </div>
+
+    <div id="view-cbt" class="hidden fixed inset-0 bg-white z-[100] flex flex-col">
+        <div class="bg-slate-900 p-6 text-white flex justify-between items-center">
+            <div>
+                <h2 id="cbt-mapel" class="font-black italic uppercase text-xs text-blue-400">Ujian</h2>
+                <p id="cbt-no" class="font-black text-xl">Soal 1</p>
+            </div>
+            <div id="cbt-timer" class="bg-red-600 px-6 py-2 rounded-full font-black text-lg">45:00</div>
+        </div>
+        <div class="flex-1 p-8 bg-slate-50 overflow-y-auto flex items-center">
+            <div class="max-w-3xl mx-auto w-full bg-white p-12 rounded-[3rem] shadow-sm border">
+                <h3 id="cbt-soal" class="text-2xl font-bold text-slate-800 mb-10 leading-snug"></h3>
+                <div id="cbt-opsi" class="grid gap-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbyhnrmasvkT0C8WkYHx1guRLxRwzuAAq8HtJ-X5Lh6cKUP6bz3KmdMJsBKkwLUCeebkkw/exec"; // Ganti dengan URL Script Bapak
+        let currentUser = null;
+        let listMateri = [];
+        let soalAktif = [];
+        let indexSoal = 0;
+        let skorBenar = 0;
+        let timerInterval;
+
+        async function doLogin() {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            if(!u || !p) return alert("Isi Username & Password!");
+            
+            try {
+                const res = await fetch(`${API_URL}?action=login&user=${u}&pass=${p}`);
+                const data = await res.json();
+                if(data.status === "success") { 
+                    currentUser = data.profile; 
+                    renderDashboard(); 
+                } else alert("Username atau Password Salah!");
+            } catch (e) { alert("Gagal terhubung ke server!"); }
+        }
+
+        function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); }
+
+        function renderDashboard() {
+            document.getElementById('view-login').classList.add('hidden');
+            document.getElementById('view-dashboard').classList.remove('hidden');
+            document.getElementById('display-name').innerText = currentUser.nama;
+            document.getElementById('role-badge').innerText = `${currentUser.role} | ${currentUser.sekolah || currentUser.kecamatan}`;
+
+            const role = currentUser.role.toLowerCase();
+            if(role === 'kadis' || role === 'pengawas') {
+                document.getElementById('btn-monitor').classList.remove('hidden');
+                loadKadisMonitoring();
+            } else if(role === 'guru') {
+                document.getElementById('btn-materi').classList.remove('hidden');
+                document.getElementById('btn-soal').classList.remove('hidden');
+                loadMateri();
+            } else if(role === 'siswa') {
+                document.getElementById('btn-materi').classList.remove('hidden');
+                document.getElementById('btn-ujian').classList.remove('hidden');
+                loadMateri();
+            }
+        }
+
+        // --- GURU: BANK SOAL ---
+        async function loadKelolaSoal() {
+            const area = document.getElementById('dynamic-content');
+            area.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-black italic uppercase">Manajemen Bank Soal</h3>
+                    <button onclick="toggleModal('modal-soal', true)" class="bg-blue-600 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase">+ Buat Soal Baru</button>
+                </div>
+                <div id="grid-soal" class="bg-white rounded-3xl p-6 border overflow-x-auto">
+                    <table class="w-full text-left text-[11px]">
+                        <thead><tr class="border-b uppercase font-black text-slate-400">
+                            <th class="p-3 text-center">No</th><th>Mapel</th><th>Kategori</th><th>Soal</th><th>Kunci</th>
+                        </tr></thead>
+                        <tbody id="table-soal-body"><tr><td colspan="5" class="p-10 text-center italic">Memuat data soal...</td></tr></tbody>
+                    </table>
+                </div>`;
+            
+            const res = await fetch(`${API_URL}?action=getSoal&kategori=all`);
+            const data = await res.json();
+            const body = document.getElementById('table-soal-body');
+            body.innerHTML = '';
+            data.reverse().filter(s => s.nama_guru === currentUser.nama).forEach((s, idx) => {
+                body.innerHTML += `
+                    <tr class="border-b hover:bg-slate-50 transition">
+                        <td class="p-3 text-center font-bold">${idx + 1}</td>
+                        <td class="p-3 font-bold">${s.mapel}</td>
+                        <td class="p-3"><span class="px-2 py-1 bg-slate-100 rounded text-[9px] font-black uppercase">${s.kategori}</span></td>
+                        <td class="p-3 italic">${s.pertanyaan.substring(0, 50)}...</td>
+                        <td class="p-3 font-black text-blue-600 uppercase">${s.jawaban_benar}</td>
+                    </tr>`;
+            });
+        }
+
+        // --- SISWA: E-UJIAN ---
+        function loadUjian() {
+            const area = document.getElementById('dynamic-content');
+            area.innerHTML = `
+                <h3 class="font-black mb-8 italic uppercase text-center">Pilih Kategori Ujian</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    ${['Harian', 'UTS', 'UAS'].map(k => `
+                        <button onclick="mulaiUjian('${k}')" class="bg-white p-10 rounded-[3rem] border-4 border-transparent hover:border-blue-600 shadow-sm transition group">
+                            <i class="fas fa-edit text-4xl text-slate-200 group-hover:text-blue-600 mb-4 transition"></i>
+                            <p class="font-black uppercase tracking-widest text-slate-800">${k}</p>
+                            <p class="text-[9px] text-slate-400 mt-2">Klik untuk mulai ujian</p>
+                        </button>
+                    `).join('')}
+                </div>`;
+        }
+
+        async function mulaiUjian(kat) {
+            const res = await fetch(`${API_URL}?action=getSoal&kategori=${kat}`);
+            const data = await res.json();
+            if(data.length === 0) return alert("Belum ada soal untuk kategori ini.");
+            
+            soalAktif = data.sort(() => Math.random() - 0.5).slice(0, 10); // Ambil 10 soal acak
+            indexSoal = 0; skorBenar = 0;
+            document.getElementById('view-cbt').classList.remove('hidden');
+            renderSoal();
+            startTimer(45);
+        }
+
+        function renderSoal() {
+            const s = soalAktif[indexSoal];
+            document.getElementById('cbt-no').innerText = `SOAL ${indexSoal + 1} / ${soalAktif.length}`;
+            document.getElementById('cbt-mapel').innerText = s.mapel;
+            document.getElementById('cbt-soal').innerText = s.pertanyaan;
+            const opsiContainer = document.getElementById('cbt-opsi');
+            opsiContainer.innerHTML = '';
+            ['a','b','c','d'].forEach(h => {
+                opsiContainer.innerHTML += `
+                <button onclick="jawab('${h}','${s.jawaban_benar}')" class="group w-full text-left p-5 border-2 rounded-2xl hover:bg-blue-50 hover:border-blue-200 transition flex items-center gap-4">
+                    <span class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 group-hover:bg-blue-600 group-hover:text-white font-black uppercase transition text-sm">${h}</span>
+                    <span class="font-bold text-slate-700">${s['opsi_'+h]}</span>
+                </button>`;
+            });
+        }
+
+        function jawab(p, k) {
+            if(p === k) skorBenar++;
+            if(indexSoal < soalAktif.length - 1) { indexSoal++; renderSoal(); }
+            else { finishUjian(); }
+        }
+
+        async function finishUjian() {
+            clearInterval(timerInterval);
+            const skor = (skorBenar / soalAktif.length) * 100;
+            const fd = new URLSearchParams();
+            fd.set('action', 'submitUjian');
+            fd.set('nama', currentUser.nama);
+            fd.set('sekolah', currentUser.sekolah);
+            fd.set('mapel', soalAktif[0].mapel);
+            fd.set('kategori', soalAktif[0].kategori);
+            fd.set('skor', skor.toFixed(2));
+            
+            await fetch(API_URL, { method: 'POST', body: fd, mode: 'no-cors' });
+            alert(`Ujian Selesai! Skor Anda: ${skor.toFixed(2)}`);
+            document.getElementById('view-cbt').classList.add('hidden');
+            renderDashboard();
+        }
+
+        function startTimer(m) {
+            let s = m * 60;
+            timerInterval = setInterval(() => {
+                let min = Math.floor(s/60); let sec = s%60;
+                document.getElementById('cbt-timer').innerText = `${min}:${sec < 10 ? '0'+sec : sec}`;
+                if(s <= 0) finishUjian();
+                s--;
+            }, 1000);
+        }
+
+        // --- KADIS/PENGAWAS: MONITORING SUPER ---
+        async function loadKadisMonitoring() {
+            const area = document.getElementById('dynamic-content');
+            area.innerHTML = `<p class="text-center italic animate-pulse">Memuat Dashboard Monitoring...</p>`;
+            
+            const res = await fetch(`${API_URL}?action=getStats`);
+            const data = await res.json();
+
+            area.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-blue-600 p-6 rounded-[2rem] text-white shadow-xl">
+                        <p class="text-[10px] font-black uppercase opacity-60">Total Materi</p>
+                        <h4 class="text-4xl font-black">${data.materi}</h4>
+                    </div>
+                    <div class="bg-orange-500 p-6 rounded-[2rem] text-white shadow-xl">
+                        <p class="text-[10px] font-black uppercase opacity-60">Bank Soal</p>
+                        <h4 class="text-4xl font-black">${data.soal}</h4>
+                    </div>
+                    <div class="bg-emerald-600 p-6 rounded-[2rem] text-white shadow-xl">
+                        <p class="text-[10px] font-black uppercase opacity-60">User Aktif</p>
+                        <h4 class="text-4xl font-black">${data.user}</h4>
+                    </div>
+                    <div class="bg-slate-900 p-6 rounded-[2rem] text-white shadow-xl">
+                        <p class="text-[10px] font-black uppercase opacity-60">Kecamatan</p>
+                        <h4 class="text-4xl font-black">${data.jml_kecamatan || '-'}</h4>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-8 rounded-[2.5rem] border shadow-sm">
+                        <h3 class="font-black mb-4 italic uppercase text-xs">Laporan Nilai Terbaru</h3>
+                        <div class="overflow-x-auto h-[300px] custom-scrollbar">
+                            <table class="w-full text-[10px] text-left">
+                                <thead class="sticky top-0 bg-white">
+                                    <tr class="border-b"><th class="py-2">Siswa</th><th>Sekolah</th><th>Mapel</th><th>Skor</th></tr>
+                                </thead>
+                                <tbody>
+                                    ${data.nilai_terakhir.map(n => `
+                                        <tr class="border-b hover:bg-slate-50">
+                                            <td class="py-2 font-bold">${n.nama_siswa}</td>
+                                            <td>${n.sekolah}</td>
+                                            <td>${n.mapel}</td>
+                                            <td class="font-black text-blue-600">${n.skor}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-[2.5rem] border shadow-sm">
+                        <h3 class="font-black mb-4 italic uppercase text-xs">Log Akses Sistem</h3>
+                        <div class="space-y-3 h-[300px] overflow-y-auto custom-scrollbar">
+                            ${data.logs.map(l => `
+                                <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-[10px] font-black">${l.role[0]}</div>
+                                    <div class="flex-1">
+                                        <p class="font-black text-[10px] leading-tight">${l.nama}</p>
+                                        <p class="text-[8px] text-slate-400 uppercase">${l.unit} | ${l.waktu}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- MANAJEMEN MATERI (GURU/SISWA) ---
+        async function loadMateri() {
+            const area = document.getElementById('dynamic-content');
+            let guruBtn = currentUser.role.toLowerCase() === 'guru' ? 
+                `<div class="flex justify-between items-center mb-6">
+                    <h3 class="font-black italic uppercase">Materi Ajar</h3>
+                    <button onclick="toggleModal('modal-materi', true)" class="bg-emerald-600 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase">+ Tambah Materi</button>
+                </div>` : `<h3 class="font-black mb-6 italic uppercase">Pusat Materi Belajar</h3>`;
+            
+            area.innerHTML = `${guruBtn}<div id="grid-materi" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>`;
+            
+            const res = await fetch(`${API_URL}?action=getMateri&role=${currentUser.role}&unit=${encodeURIComponent(currentUser.sekolah || currentUser.kecamatan)}`);
+            listMateri = await res.json();
+            
+            const container = document.getElementById('grid-materi');
+            listMateri.reverse().forEach((m, idx) => {
+                container.innerHTML += `
+                <div class="bg-white p-6 rounded-[2.5rem] border shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between mb-3">
+                             <span class="text-[9px] font-black text-emerald-600 uppercase px-3 py-1 bg-emerald-50 rounded-full">${m.mapel}</span>
+                             <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${m.kelas}</span>
+                        </div>
+                        <h4 class="font-extrabold text-slate-800 mb-3 line-clamp-2">${m.judul_materi}</h4>
+                        <p class="text-[10px] text-slate-400 mb-6 italic italic">${m.nama_guru}</p>
+                    </div>
+                    <button onclick="bukaDetailMateri(${idx})" class="w-full bg-slate-900 text-white py-4 rounded-2xl text-[10px] font-black uppercase hover:bg-blue-600 transition-all">BUKA MATERI</button>
+                </div>`;
+            });
+        }
+
+        function bukaDetailMateri(idx) {
+            const m = listMateri[idx];
+            document.getElementById('modal-detail-materi').classList.remove('hidden');
+            document.getElementById('view-judul').innerText = m.judul_materi;
+            document.getElementById('view-konten').innerText = m.isi_materi;
+            
+            const ytBox = document.getElementById('view-yt');
+            if(m.link_youtube) {
+                ytBox.innerHTML = `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${m.link_youtube}" frameborder="0" allowfullscreen></iframe>`;
+                ytBox.classList.remove('hidden');
+            } else { ytBox.classList.add('hidden'); }
+
+            const imgBox = document.getElementById('view-img');
+            if(m.link_gambar) {
+                imgBox.querySelector('img').src = m.link_gambar;
+                imgBox.classList.remove('hidden');
+            } else { imgBox.classList.add('hidden'); }
+
+            const pdfBox = document.getElementById('view-pdf');
+            if(m.link_pdf) {
+                pdfBox.querySelector('a').href = m.link_pdf;
+                pdfBox.classList.remove('hidden');
+            } else { pdfBox.classList.add('hidden'); }
+        }
+
+        // Form Submit Handler
+        document.getElementById('form-soal').onsubmit = handleForm;
+        document.getElementById('form-materi').onsubmit = handleForm;
+
+        async function handleForm(e) {
+            e.preventDefault();
+            const btn = e.submitter;
+            const originalText = btn.innerText;
+            btn.innerText = "Mengirim..."; btn.disabled = true;
+            
+            const fd = new FormData(this);
+            fd.append('nama_guru', currentUser.nama);
+            fd.append('sekolah', currentUser.sekolah);
+            fd.append('kecamatan', currentUser.kecamatan);
+            
+            try {
+                await fetch(API_URL, { method: 'POST', body: new URLSearchParams(fd), mode: 'no-cors' });
+                alert("Berhasil Disimpan!");
+                this.reset();
+                this.closest('.fixed').classList.add('hidden');
+                if(this.id === 'form-soal') loadKelolaSoal(); else loadMateri();
+            } catch (e) { alert("Terjadi kesalahan."); }
+            btn.innerText = originalText; btn.disabled = false;
+        }
+    </script>
+</body>
+</html>
